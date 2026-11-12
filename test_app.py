@@ -3,7 +3,7 @@ import pytest
 from app import add, divide, multiply, subtract
 
 
-@pytest.mark.parametrize("a,b,result", [(2, 3, 6), (-1, 1, 0), (0, 0, 0)])
+@pytest.mark.parametrize("a,b,result", [(2, 3, 5), (-1, 1, 0), (0, 0, 0)])
 def test_add(a, b, result):
     assert add(a, b) == result
 
