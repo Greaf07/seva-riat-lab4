@@ -1,0 +1,49 @@
+version: 2.1
+
+jobs:
+  test:
+    docker:
+      - image: cimg/python:3.12
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+            - v1-test-py312-{{ checksum "requirements.txt" }}
+      - run:
+          name: Install dependencies
+          command: python -m pip install -r requirements.txt
+      - save_cache:
+          key: v1-test-py312-{{ checksum "requirements.txt" }}
+          paths:
+            - ~/.cache/pip
+      - run:
+          name: Run pytest
+          command: python -m pytest -v --junitxml=test-results/pytest.xml
+      - store_test_results:
+          path: test-results
+      - store_artifacts:
+          path: test-results
+  style:
+    docker:
+      - image: cimg/python:3.12
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+            - v1-style-py312-{{ checksum "requirements.txt" }}
+      - run:
+          name: Install dependencies
+          command: python -m pip install -r requirements.txt
+      - save_cache:
+          key: v1-style-py312-{{ checksum "requirements.txt" }}
+          paths:
+            - ~/.cache/pip
+      - run:
+          name: Check formatting
+          command: python -m black --check app.py test_app.py
+
+workflows:
+  build-and-test:
+    jobs:
+      - test
+      - style
